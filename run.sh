@@ -36,7 +36,8 @@ function help {
 }
 
 function install {
-    # python -m pip install --upgrade pip
+    python -m pip install --upgrade pip
+    python -m pip install build
     python -m pip install --editable "$THIS_DIR/"
 }
 
