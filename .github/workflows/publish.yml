@@ -75,7 +75,7 @@ jobs:
       run: chmod +x ./run.sh
     - name: Build
       run: |
-        /bin/bash -x ./run.sh build
+        /bin/bash -x run.sh build
     - name: Ensure ./dist is not empty
       run: |
         if [ ! -d ./dist ] || [ -z "$(ls -A ./dist)" ]; then
