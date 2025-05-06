@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -e #if any line fails the entire program fails
-
+set -x #echo each line before executing it
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>& 1 && pwd )"
 
 function try-load-dotenv {
@@ -37,30 +37,32 @@ function help {
 
 function install {
     python -m pip install --upgrade pip
-    python -m pip install --editable "$THIS_DIR/"
+    python -m pip install --editable "${THIS_DIR}/[dev]"
 }
 
 function build {
     python -m pip install --upgrade pip
     python -m pip install build
-    python -m build --sdist --wheel  "$THIS_DIR/"
+    python -m pip install twine
+    python -m build --sdist --wheel  "${THIS_DIR}/"
 }
 
 function publish:test {
     try-load-dotenv || true
     # publish the package to pypi
-    twine upload dist/ \
+    twine upload dist/* \
+        --verbose \
         --repository testpypi \
-        --username "__token__" \
+        --username __token__ \
         --password "$TEST_PYPI_PASSWORD"
 }
 
 function publish:prod {
     try-load-dotenv || true
     # publish the package to pypi
-    twine upload dist/ \
+    twine upload dist/* \
         --repository pypi \
-        --username "__token__" \
+        --username __token__ \
         --password "$PROD_PYPI_PASSWORD"
 }
 
