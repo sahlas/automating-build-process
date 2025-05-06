@@ -66,15 +66,13 @@ jobs:
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
-      - uses: actions/cache@v4
-        with:
-            path: ~/.cache/pip
-            key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt', '**/pyproject.toml') }}
-            restore-keys: |
-              ${{ runner.os }}-pip-
-      - name: Display Python version
-        run: python -c "import sys; print(sys.version)"
+          python-version: ${{ matrix.python-version }}     
+      - name: Build
+        run: |
+          ./run.sh build
+
+      - name: Display contents of ./dist
+        run: ls -l ./dist  
       - name: Upload wheel and sdist artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -115,7 +113,6 @@ jobs:
       - name: Install twine
         run: |
               python -m pip install twine
-
               #post merge
       - name: Publish to TestPyPI
 
