@@ -60,29 +60,6 @@ jobs:
         run: |
               /bin/bash -x ./run.sh lint:ci
 
-  # build-wheel-and-sdist:
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       python-version: ["3.13"]
-  #   steps:
-  #     - name: Set up Python ${{ matrix.python-version }}
-  #       uses: actions/setup-python@v5
-  #       with:
-  #         python-version: ${{ matrix.python-version }}
-  #     - name: Build
-  #       run: |
-  #         ./run.sh build
-
-  #     - name: Display contents of ./dist
-  #       run: ls -l ./dist
-  #     - name: Upload wheel and sdist artifacts
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: wheel-and-sdist
-  #         path: ./dist/*
-
-
   build-wheel-and-sdist:
     runs-on: ubuntu-latest
     strategy:
@@ -134,10 +111,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Download wheel and sdist artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: wheel-and-sdist
-          path: ./dist
+          path: dist/*
 
 
       - uses: actions/cache@v4
