@@ -49,7 +49,7 @@ function build {
 function publish:test {
     try-load-dotenv || true
     # publish the package to pypi
-    twine upload dist/* \
+    twine upload dist/ \
         --repository testpypi \
         --username "__token__" \
         --password "$TEST_PYPI_PASSWORD"
@@ -58,7 +58,7 @@ function publish:test {
 function publish:prod {
     try-load-dotenv || true
     # publish the package to pypi
-    twine upload dist/* \
+    twine upload dist/ \
         --repository pypi \
         --username "__token__" \
         --password "$PROD_PYPI_PASSWORD"
