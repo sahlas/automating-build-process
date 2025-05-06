@@ -9,13 +9,12 @@ mypkg = ["*.json", "*.png"]
 # python_project_00 = ["*.json", "*.png"]
 
 [project]
-name = "automating_build_process"
-version = "0.0.1"
+name = "python_project_bsahlas_00"
+version = "0.0.3"
 description = "TPP Course - Automating Build Process"
 readme = "README.md"
 requires-python = ">=3.8"
 license = "MIT"
-license-files = ["LICEN[CS]E.*"]
 keywords = ["tpp", "continuous delivery", "python"]
 authors = [
   {email = "bill.sahlas@gmail.com"},
@@ -27,17 +26,15 @@ classifiers = [
 ]
 
 dependencies = [
-    "build",
-    "numpy",
-    "pre-commit",
-    "twine"
+    "numpy"
 ]
 
 [project.optional-dependencies]
+colors = ["rich"]
 static-code-analysis = ["pre-commit"]
 test = ["pytest", "pytest-cov"]
-release = ["twine"]
-dev = ["automating_build_process[test, release, static-code-analysis]"]
+release = ["twine", "build"]
+dev = ["python_project_bsahlas_00[test, colors, release, static-code-analysis]"]
 
 [project.urls]
 repository = "https://github.com/bsahlas/automating-build-process"
