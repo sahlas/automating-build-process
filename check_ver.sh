@@ -24,7 +24,7 @@
           # if [ -f version.txt ]; then
           #   echo "version.txt found in current directory!"
           #   exit 1
-          # fi          
+          # fi
           # # Check if version.txt contains a valid version string
           # if ! grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$' version.txt; then
           #   echo "version.txt does not contain a valid version string!"
