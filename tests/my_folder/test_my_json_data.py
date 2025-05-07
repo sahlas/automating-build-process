@@ -9,7 +9,6 @@ THIS_DIR = Path(__file__).parent
 DATA_JSON_FPATH = THIS_DIR / "../../python_project_00/my_folder/my_data.json"
 
 
-
 @pytest.fixture
 def sample_json_file(tmp_path):
     """Fixture to create a sample JSON file for testing."""
@@ -24,7 +23,6 @@ def sample_json_file(tmp_path):
     return DATA_JSON_FPATH  # Use the existing JSON file for testing
 
 
-
 def test_process_json_list(capsys, sample_json_file):
     # Test the process_json_list function
     process_json_list(sample_json_file)
@@ -32,6 +30,7 @@ def test_process_json_list(capsys, sample_json_file):
     assert "item1" in captured.out
     assert "item2" in captured.out
     assert "item3" in captured.out
+
 
 def test_process_json_list_empty(capsys, tmp_path):
     # Test with an empty list in the JSON file
@@ -45,6 +44,7 @@ def test_process_json_list_empty(capsys, tmp_path):
     process_json_list(temp_file)
     captured = capsys.readouterr()
     assert captured.out == ""
+
 
 def test_process_json_list_missing_key(tmp_path):
     # Test with a missing 'items' key in the JSON file

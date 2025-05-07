@@ -12,6 +12,7 @@ from python_project_00.slow import slow_add
 
 slow = pytest.mark.slow  # Simple MarkDecorator
 
+
 @slow
 def test_slow_add_no_delay():
     """Test slow_add with no delay."""
