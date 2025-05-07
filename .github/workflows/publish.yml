@@ -74,7 +74,7 @@ jobs:
 
 
   execute-tests:
-    needs: 
+    needs:
       - build-wheel-and-sdist
     runs-on: ubuntu-latest
     steps:

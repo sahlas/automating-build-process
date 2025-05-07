@@ -1,5 +1,7 @@
-import pytest
 from pathlib import Path
+
+import pytest
+
 from python_project_00.states_info import is_city_capital_of_state
 
 THIS_DIR = Path(__file__).parent
@@ -9,7 +11,7 @@ slow = pytest.mark.slow  # Simple MarkDecorator
 
 
 # Test cases
-def test_is_city_capital_of_state_valid():    
+def test_is_city_capital_of_state_valid():
     assert is_city_capital_of_state("Boston", "Massachusetts") is True
     assert is_city_capital_of_state("Albany", "New York") is True
     assert is_city_capital_of_state("Sacramento", "California") is True
@@ -22,4 +24,4 @@ def test_is_city_capital_of_state_invalid():
 
 
 def test_is_city_capital_of_state_city_not_found(monkeypatch):
-    assert is_city_capital_of_state("Nonexistent City", "Massachusetts") is False
+    assert is_city_capital_of_state("Not a City", "Massachusetts") is False

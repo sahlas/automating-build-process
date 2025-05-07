@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 import pytest
+
 from python_project_00.my_folder.my_json_data import process_json_list
 
 THIS_DIR = Path(__file__).parent

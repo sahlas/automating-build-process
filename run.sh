@@ -122,7 +122,7 @@ function check {
 }
 
 function test:quick {
-    # Run only quick tests, if none specified, run all tests  
+    # Run only quick tests, if none specified, run all tests
     PYTEST_EXIT_STATUS=0
     python -m pytest -m 'not slow' "${@:-$THIS_DIR/tests}" \
         --cov "$THIS_DIR/python_project_00" \
@@ -157,7 +157,7 @@ function test:wheel-locally {
     else
         echo "No active virtual environment to deactivate."
     fi
-    
+
     rm -rf ./test-venv || true
     python -m venv ./test-venv
     source ./test-venv/bin/activate

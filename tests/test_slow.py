@@ -4,9 +4,11 @@
 # It is subject to the license terms in the LICENSE file found in the top-level
 # directory of this distribution and at
 
-import pytest
-from python_project_00.slow import slow_add
 from time import time
+
+import pytest
+
+from python_project_00.slow import slow_add
 
 slow = pytest.mark.slow  # Simple MarkDecorator
 

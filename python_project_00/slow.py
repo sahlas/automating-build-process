@@ -1,16 +1,19 @@
 from time import sleep
 
+
 def slow_add(a: int, b: int, delay: int = 0) -> int:
     """Add two numbers with an intentional delay of 4 seconds.
-    
+
     Args:
         a (int): The first number.
         b (int): The second number.
-        delay (int, optional): Time in seconds to delay the operation. Defaults to 0.
+        delay (int, optional): Time in seconds to delay the operation.
+        Defaults to 0.
     """
     if delay > 0:
         sleep(delay)
     return a + b
+
 
 def subtract(a: int, b: int, delay: int = 0) -> int:
     """Subtract two numbers with an optional delay."""
@@ -18,17 +21,24 @@ def subtract(a: int, b: int, delay: int = 0) -> int:
         sleep(delay)
     return a - b
 
+
 def multiply(a: int, b: int) -> int:
     """Multiply two numbers."""
     return a * b
+
+
 def divide(a: int, b: int) -> float:
     """Divide two numbers."""
     if b == 0:
         raise ValueError("Cannot divide by zero.")
     return a / b
+
+
 def power(a: int, b: int) -> int:
     """Raise a number to the power of another."""
     return a ** b
+
+
 def factorial(n: int) -> int:
     """Calculate the factorial of a number."""
     if n < 0:
@@ -39,6 +49,8 @@ def factorial(n: int) -> int:
     for i in range(2, n + 1):
         result *= i
     return result
+
+
 def fibonacci(n: int) -> int:
     """Calculate the nth Fibonacci number."""
     if n < 0:
