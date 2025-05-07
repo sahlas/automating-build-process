@@ -1,8 +1,9 @@
 import json
 from pathlib import Path
 
+
 THIS_DIR = Path(__file__).parent
-DATA_JSON_FPATH = THIS_DIR / "./my_folder/my_data.json"
+DATA_JSON_FPATH = THIS_DIR / "./my_data.json"
 # Example usage
 file_path = DATA_JSON_FPATH
 
@@ -18,4 +19,3 @@ def process_json_list(file_path):
         print(item)
 
 
-process_json_list(file_path)

@@ -1,4 +1,5 @@
 .DS_Store
+test-reports/
 build/
 dist/
 *.egg-info
@@ -9,3 +10,4 @@ __pycache__/
 *env
 *venv
 .env
+.coverage

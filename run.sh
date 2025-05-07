@@ -85,21 +85,18 @@ function install_dev {
 
 function clean {
     # clean up cached files
-    rm -rf dist build
+    rm -rf dist build test-reports coverage.xml
+
     find "${THIS_DIR}" \
       -type d \
       \( \
         -name "*cache*" \
         -o -name "*.dist-info" \
         -o -name "*.egg-info" \
+        -o -name "htmlcov" \
         \) \
-      -not -path "${THIS_DIR}/venv/*" \
+      -not -path "${THIS_DIR}/*env/*" \
       -exec rm -r {} +
-}
-
-function test {
-    # run tests
-    pytest -v --tb=short --disable-warnings --maxfail=1
 }
 
 function lint {
@@ -123,13 +120,75 @@ function check {
     black --check --line-length 120
     isort --check-only --profile black
 }
-function run {
-    # run the program
-    python -m "${THIS_DIR}/src/main.py" "${@}"
+
+function test:quick {
+    # Run only quick tests, if none specified, run all tests  
+    PYTEST_EXIT_STATUS=0
+    python -m pytest -m 'not slow' "${@:-$THIS_DIR/tests}" \
+        --cov "$THIS_DIR/python_project_00" \
+        --cov-report html \
+        --cov-report term \
+        --cov-report xml \
+        --junitxml $THIS_DIR/test-reports/report.xml \
+        --cov-fail-under=10 || ((PYTEST_EXIT_STATUS=$?))
+    mv coverage.xml "$THIS_DIR/test-reports/"
+    mv htmlcov "$THIS_DIR/test-reports/"
 }
-function run_tests {
-    # run tests
-    pytest -v --tb=short --disable-warnings --maxfail=1
+
+# (example) ./run.sh test tests/test_slow.py::test_slow_add_with_delay
+function test {
+    # Run only specific tests, if none specified, run all tests
+    PYTEST_EXIT_STATUS=0
+    python -m pytest "${@:-$THIS_DIR/tests}" \
+        --cov "$THIS_DIR/python_project_00" \
+        --cov-report html \
+        --cov-report term \
+        --cov-report xml \
+        --junitxml $THIS_DIR/test-reports/report.xml \
+        --cov-fail-under=10 || ((PYTEST_EXIT_STATUS=$?))
+    mv coverage.xml "$THIS_DIR/test-reports/"
+    mv htmlcov "$THIS_DIR/test-reports/"
+}
+
+function test:wheel-locally {
+    if [ -n "$VIRTUAL_ENV" ]; then
+        deactivate
+        echo "Virtual environment deactivated."
+    else
+        echo "No active virtual environment to deactivate."
+    fi
+    
+    rm -rf ./test-venv || true
+    python -m venv ./test-venv
+    source ./test-venv/bin/activate
+    clean || true
+    pip install build
+    build
+    pip install ./dist/*.whl pytest pytest-cov
+    test:ci
+}
+
+function test:ci {
+    # Run only specific tests, if none specified, run all tests
+    PYTEST_EXIT_STATUS=0
+    INSTALLED_PKG_DIR="$(python -c 'import site; print(site.getsitepackages()[0])')"
+    python -m pytest "${@:-$THIS_DIR/tests}" \
+        --cov "$THIS_DIR/python_project_00" \
+        --cov-report html \
+        --cov-report term \
+        --cov-report xml \
+        --junitxml $THIS_DIR/test-reports/report.xml \
+        --cov-fail-under=10 || ((PYTEST_EXIT_STATUS=$?))
+    mv coverage.xml "$THIS_DIR/test-reports/"
+    mv htmlcov "$THIS_DIR/test-reports/"
+    mv .coverage "$THIS_DIR/test-reports/"
+    return $PYTEST_EXIT_STATUS
+}
+
+
+function serve-coverage-report {
+    # serve the coverage report
+    python -m http.server --directory test-reports/htmlcov
 }
 
 TIMEFORMAT="Task completed in %3lR"

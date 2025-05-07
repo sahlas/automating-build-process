@@ -9,7 +9,7 @@ find . \
     -o -name "*.dist-info" \
     -o -name "*.egg-info" \
     \) \
-  -not -path "./venv/*" \
+  -not -path "./*env/*" \
   -exec rm -r {} +
 
   # rebuild and unzip the wheel

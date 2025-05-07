@@ -3,13 +3,11 @@ requires = ["setuptools >= 61.0.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.package-data]
-mypkg = ["*.json", "*.png"]
+python_project_00 = ["**/*.json", "**/*.png"]
 
-# [tool.setuptools.package-data]
-# python_project_00 = ["*.json", "*.png"]
 
 [project]
-name = "python_project_bsahlas_00"
+name = "packaging_project_bsahlas"
 version = "0.0.3"
 description = "TPP Course - Automating Build Process"
 readme = "README.md"
@@ -34,11 +32,16 @@ colors = ["rich"]
 static-code-analysis = ["pre-commit"]
 test = ["pytest", "pytest-cov"]
 release = ["twine", "build"]
-dev = ["python_project_bsahlas_00[test, colors, release, static-code-analysis]"]
+dev = ["packaging_project_bsahlas[test, colors, release, static-code-analysis]"]
 
 [project.urls]
 repository = "https://github.com/bsahlas/automating-build-process"
 
+[tool.pytest.ini_options]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "smoke: marks tests as smoke (deselect with '-m \"not smoke\"')",
+]
 
 [tool.ruff]
 # 1. Enable flake8-bugbear (`B`) rules, in addition to the defaults.
