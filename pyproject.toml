@@ -8,7 +8,6 @@ python_project_00 = ["**/*.json", "**/*.png"]
 
 [project]
 name = "packaging_project_bsahlas"
-version = "0.0.3"
 description = "TPP Course - Automating Build Process"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -18,14 +17,9 @@ authors = [
   {email = "bill.sahlas@gmail.com"},
   {name = "Bill Sahlas"}
 ]
-
-classifiers = [
-  "Programming Language :: Python"
-]
-
-dependencies = [
-    "numpy"
-]
+classifiers = ["Programming Language :: Python :: 3"]
+dependencies = ["numpy"]
+dynamic = ["version"]
 
 [project.optional-dependencies]
 colors = ["rich"]
@@ -34,8 +28,8 @@ test = ["pytest", "pytest-cov"]
 release = ["twine", "build"]
 dev = ["packaging_project_bsahlas[test, colors, release, static-code-analysis]"]
 
-[project.urls]
-repository = "https://github.com/bsahlas/automating-build-process"
+[tool.setuptools.dynamic]
+version = { file = "version.txt" }
 
 [tool.pytest.ini_options]
 markers = [
