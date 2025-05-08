@@ -68,34 +68,6 @@ jobs:
           name: wheel-and-sdist
           path: ./dist/*
 
-
-
-  _build-wheel-and-sdist:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Set up Python 3.13
-      uses: actions/setup-python@v5
-      with:
-            python-version: 3.13
-    - uses: actions/checkout@v4
-    - name: Make run.sh executable
-      run: chmod +x ./run.sh
-    - uses: actions/cache@v4
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt', '**/pyproject.toml') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-    - name: Install build CLI
-      run: |
-        python -m pip install build
-    - name: Upload wheel and sdist artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: wheel-and-sdist
-        path: ./dist/*
-
-
   execute-tests:
     needs:
       - build-wheel-and-sdist
