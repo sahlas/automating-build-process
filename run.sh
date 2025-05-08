@@ -136,18 +136,26 @@ function test:quick {
 }
 
 # (example) ./run.sh test tests/test_slow.py::test_slow_add_with_delay
-function test {
-    # Run only specific tests, if none specified, run all tests
+function test:ci {
+    INSTALLED_PKG_DIR="$(python -c 'import example_pkg; print(example_pkg.__path__[0])')"
+    # in CI, we must calculate the coverage for the installed package, not the src/ folder
+    COVERAGE_DIR="$INSTALLED_PKG_DIR" run-tests
+}
+
+# (example) ./run.sh test tests/test_states_info.py::test__slow_add
+function run-tests {
     PYTEST_EXIT_STATUS=0
-    python -m pytest "${@:-$THIS_DIR/tests}" \
-        --cov "$THIS_DIR/python_project_00" \
+    python -m pytest ${@:-"$THIS_DIR/tests/"} \
+        --cov "${COVERAGE_DIR:-$THIS_DIR/python_project_00}" \
         --cov-report html \
         --cov-report term \
         --cov-report xml \
-        --junitxml $THIS_DIR/test-reports/report.xml \
-        --cov-fail-under=10 || ((PYTEST_EXIT_STATUS=$?))
-    mv coverage.xml "$THIS_DIR/test-reports/"
-    mv htmlcov "$THIS_DIR/test-reports/"
+        --junit-xml "$THIS_DIR/test-reports/report.xml" \
+        --cov-fail-under 60 || ((PYTEST_EXIT_STATUS+=$?))
+    mv coverage.xml "$THIS_DIR/test-reports/" || true
+    mv htmlcov "$THIS_DIR/test-reports/" || true
+    mv .coverage "$THIS_DIR/test-reports/" || true
+    return $PYTEST_EXIT_STATUS
 }
 
 function test:wheel-locally {
@@ -167,24 +175,6 @@ function test:wheel-locally {
     pip install ./dist/*.whl pytest pytest-cov
     test:ci
 }
-
-function test:ci {
-    # Run only specific tests, if none specified, run all tests
-    PYTEST_EXIT_STATUS=0
-    INSTALLED_PKG_DIR="$(python -c 'import site; print(site.getsitepackages()[0])')"
-    python -m pytest "${@:-$THIS_DIR/tests}" \
-        --cov "$THIS_DIR/python_project_00" \
-        --cov-report html \
-        --cov-report term \
-        --cov-report xml \
-        --junitxml $THIS_DIR/test-reports/report.xml \
-        --cov-fail-under=10 || ((PYTEST_EXIT_STATUS=$?))
-    mv coverage.xml "$THIS_DIR/test-reports/"
-    mv htmlcov "$THIS_DIR/test-reports/"
-    mv .coverage "$THIS_DIR/test-reports/"
-    return $PYTEST_EXIT_STATUS
-}
-
 
 function serve-coverage-report {
     # serve the coverage report
