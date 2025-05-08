@@ -85,7 +85,7 @@ jobs:
           path: ./dist/*
       - name: Display wheel and sdist
         run: |
-          ls -Rla ./dist/packaging_project_bsahlas-0.0.3-py3-none-any.whl
+          ls -Rla /home/runner/work/automating-build-process/automating-build-process/dist/
 
       - name: Install test dependencies
         run: |
