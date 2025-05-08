@@ -85,11 +85,11 @@ jobs:
           path: ./dist/*
       - name: Display wheel and sdist
         run: |
-          ls -Rla ./dist
+          ls -Rla ./dist/packaging_project_bsahlas-0.0.3-py3-none-any.whl
 
       - name: Install test dependencies
         run: |
-              python -m pip install pytest pytest-cov /home/runner/work/automating-build-process/automating-build-process/dist/*.whl
+              python -m pip install pytest pytest-cov /home/runner/work/automating-build-process/automating-build-process/dist/packaging_project_bsahlas-0.0.3-py3-none-any.whl
       - name: Execute tests
         run: |
               /bin/bash -x ./run.sh test:ci
