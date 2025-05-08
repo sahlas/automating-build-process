@@ -15,44 +15,31 @@ env: # This is the environment variables section Global variables
 
 jobs:
 
-  # check-version-txt:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Check version.txt
-  #       run: |
-  #         if [ ! -f ./version.txt ]; then
-  #           echo "version.txt file not found!"
-  #           exit 1
-  #         fi
-  #         if ! grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$' version.txt; then
-  #           echo "version.txt does not contain a valid version number!"
-  #           exit 1
-  #         fi
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0 # Fetch all history for all branches and tags
-  #     - name: Tag with Release Version
-  #       run: |
-  #           git tag $(cat version.txt)
+  check-version-txt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Tag with the release version
+        run: |
+          git tag $(cat version.txt)
 
   lint-format-and-staic-analysis:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.13"]
+
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python 3.13
         uses: actions/setup-python@v5
         with:
-              python-version: ${{ matrix.python-version }}
-
+            python-version: 3.13
       - uses: actions/cache@v4
         with:
-              path: ~/.cache/pip
-              key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt', '**/pyproject.toml') }}
-              restore-keys: |
-                ${{ runner.os }}-pip-
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt', '**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
       - name: Install Python dependencies
         run: |
               python -m pip install pre-commit
@@ -60,69 +47,98 @@ jobs:
         run: |
               /bin/bash -x ./run.sh lint:ci
 
+
   build-wheel-and-sdist:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.13"]
     steps:
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-    - uses: actions/checkout@v4
-    - name: Make run.sh executable
-      run: chmod +x ./run.sh
-    - name: Build
-      run: |
-        /bin/bash -x run.sh build
-    - name: Ensure ./dist is not empty
-      run: |
-        if [ ! -d ./dist ] || [ -z "$(ls -A ./dist)" ]; then
-          echo "Error: ./dist directory is empty or missing. Ensure the build step creates files in ./dist."
-          exit 1
-        fi
-    - name: Display contents of ./dist
-      run: ls -l ./dist
-    - name: Upload wheel and sdist artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: wheel-and-sdist
-        path: dist/
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.13
+      - name: Install build CLI
+        run: |
+          pip install build
+      - name: Build python package
+        run: |
+          /bin/bash -x run.sh build
+      - name: Upload wheel and sdist
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheel-and-sdist
+          path: ./dist
+
+  # execute-tests:
+  #   needs:
+  #     - build-wheel-and-sdist
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Set up Python 3.13
+  #       uses: actions/setup-python@v5
+  #       with:
+  #             python-version: 3.13
+  #     - name: Download wheel and sdist artifacts
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: wheel-and-sdist
+  #         path: ./dist/*
+  #     - name: Display wheel and sdist
+  #       run: |
+  #         ls -Rla /home/runner/work/automating-build-process/automating-build-process/dist/
+
+  #     - name: Install test dependencies
+  #       run: |
+  #             python -m pip install pytest pytest-cov /home/runner/work/automating-build-process/automating-build-process/dist/packaging_project_bsahlas-0.0.3-py3-none-any.whl
+  #     - name: Execute tests
+  #       run: |
+  #             /bin/bash -x ./run.sh test:ci
+
+  execute-tests:
+    needs:
+      - build-wheel-and-sdist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.8
+      - name: Download wheel and sdist
+        uses: actions/download-artifact@v4
+        with:
+          name: wheel-and-sdist
+          path: ./dist/
+      - name: Install test dependencies
+        run: |
+          pip install rich pytest pytest-cov ./dist/*.whl
+      - name: Run tests
+        run: |
+          /bin/bash -x run.sh test:ci
 
   publish:
     needs:
+      - execute-tests
       - build-wheel-and-sdist
       - lint-format-and-staic-analysis
-      # - check-version-txt
+      - check-version-txt
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
-    strategy:
-      matrix:
-        python-version: ["3.13"]
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Fetch all history for all branches and tags
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v3
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: 3.8
 
       - name: Download wheel and sdist artifacts
         uses: actions/download-artifact@v4
         with:
           name: wheel-and-sdist
-          path: dist/*
-
-
-      - uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt', '**/pyproject.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          path: ./dist/*
       - name: Install twine
         run: |
               python -m pip install twine
@@ -145,55 +161,30 @@ jobs:
 
 
   # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs#example-printing-context-information-to-the-log
-  # dump_contexts_to_log:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Dump GitHub context
-  #       env:
-  #         GITHUB_CONTEXT: ${{ toJson(github) }}
-  #       run: echo "$GITHUB_CONTEXT"
-  #     - name: Dump job context
-  #       env:
-  #         JOB_CONTEXT: ${{ toJson(job) }}
-  #       run: echo "$JOB_CONTEXT"
-  #     - name: Dump steps context
-  #       env:
-  #         STEPS_CONTEXT: ${{ toJson(steps) }}
-  #       run: echo "$STEPS_CONTEXT"
-  #     - name: Dump runner context
-  #       env:
-  #         RUNNER_CONTEXT: ${{ toJson(runner) }}
-  #       run: echo "$RUNNER_CONTEXT"
-  #     - name: Dump strategy context
-  #       env:
-  #         STRATEGY_CONTEXT: ${{ toJson(strategy) }}
-  #       run: echo "$STRATEGY_CONTEXT"
-  #     - name: Dump matrix context
-  #       env:
-  #         MATRIX_CONTEXT: ${{ toJson(matrix) }}
-  #       run: echo "$MATRIX_CONTEXT"
-  #     - name: Dump secrets context
-  #       env:
-  #         SECRETS_CONTEXT: ${{ toJson(secrets) }}
-  #       run: echo "$SECRETS_CONTEXT"
-  #     - name: Dump runner context
-  #       env:
-  #         VARS_CONTEXT: ${{ toJson(vars) }}
-  #       run: echo "$VARS_CONTEXT"
-
-
-  # build:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Set up Python 3.8
-  #       uses: actions/setup-python@v3
-  #       with:
-  #         python-version: 3.8
-  #     - name: Install dependencies
-  #       run: |
-  #         python -m pip install --upgrade pip
-  #         pip install pre-commit
-  #     - name: Analysing the code with pylint
-  #       run: |
-  #         SKIP=no-commit-to-branch pre-commit run --all-files
+  dump_contexts_to_log:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: Dump job context
+        env:
+          JOB_CONTEXT: ${{ toJson(job) }}
+        run: echo "$JOB_CONTEXT"
+      - name: Dump steps context
+        env:
+          STEPS_CONTEXT: ${{ toJson(steps) }}
+        run: echo "$STEPS_CONTEXT"
+      - name: Dump runner context
+        env:
+          RUNNER_CONTEXT: ${{ toJson(runner) }}
+        run: echo "$RUNNER_CONTEXT"
+      - name: Dump secrets context
+        env:
+          SECRETS_CONTEXT: ${{ toJson(secrets) }}
+        run: echo "$SECRETS_CONTEXT"
+      - name: Dump runner context
+        env:
+          VARS_CONTEXT: ${{ toJson(vars) }}
+        run: echo "$VARS_CONTEXT"

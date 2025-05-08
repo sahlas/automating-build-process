@@ -1,6 +1,8 @@
 {
+  "items": ["item1", "item2", "item3"],
+
     "name": "Example Data",
-    "items": [
+    "object_items": [
       {"id": 1, "value": "A"},
       {"id": 2, "value": "B"},
       {"id": 3, "value": "C"}
