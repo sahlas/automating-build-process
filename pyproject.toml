@@ -18,14 +18,9 @@ authors = [
   {email = "bill.sahlas@gmail.com"},
   {name = "Bill Sahlas"}
 ]
-
-classifiers = [
-  "Programming Language :: Python"
-]
-
-dependencies = [
-    "numpy"
-]
+classifiers = ["Programming Language :: Python :: 3"]
+dependencies = ["numpy"]
+dynamic = ["version"]
 
 [project.optional-dependencies]
 colors = ["rich"]
@@ -36,9 +31,6 @@ dev = ["packaging_project_bsahlas[test, colors, release, static-code-analysis]"]
 
 [tool.setuptools.dynamic]
 version = { file = "version.txt" }
-
-[project.urls]
-repository = "https://github.com/bsahlas/automating-build-process"
 
 [tool.pytest.ini_options]
 markers = [
