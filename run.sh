@@ -137,7 +137,7 @@ function test:quick {
 
 # (example) ./run.sh test tests/test_slow.py::test_slow_add_with_delay
 function test:ci {
-    INSTALLED_PKG_DIR="$(python -c 'import example_pkg; print(example_pkg.__path__[0])')"
+    INSTALLED_PKG_DIR="$(python -c 'import python_project_00; print(python_project_00.__path__[0])')"
     # in CI, we must calculate the coverage for the installed package, not the src/ folder
     COVERAGE_DIR="$INSTALLED_PKG_DIR" run-tests
 }
