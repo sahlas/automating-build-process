@@ -99,13 +99,13 @@ jobs:
       - build-wheel-and-sdist
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python 3.8
         uses: actions/setup-python@v3
         with:
           python-version: 3.8
       - name: Download wheel and sdist
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: wheel-and-sdist
           path: ./dist/
