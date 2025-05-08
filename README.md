@@ -16,6 +16,6 @@ Covers
 
 Code in this repository represents Section 10 - 14: Python Packaging for team and enterprise level work.
 
-![Subject: Python Packaging](packaging_demo/images/Courses.png)
+![Subject: Python Packaging](python_project_00/images/Courses.png)
 
 Notes on [TTP](https://docs.google.com/document/d/1lVpKSA0UrOvDcfk206z6mz_EJA39q2Cd93W8DB8QRas/edit?usp=sharing):
