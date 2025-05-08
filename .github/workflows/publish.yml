@@ -79,7 +79,7 @@ jobs:
         with:
               python-version: 3.13
       - name: Download wheel and sdist artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: wheel-and-sdist
           path: ./dist/*
