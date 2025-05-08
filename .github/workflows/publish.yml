@@ -83,7 +83,7 @@ jobs:
         with:
           name: wheel-and-sdist
           path: ./dist/*
-   
+
       - name: Install test dependencies
         run: |
               python -m pip install pytest pytest-cov ./dist/*.whl
